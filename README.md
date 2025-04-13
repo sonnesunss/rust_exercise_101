@@ -2,3 +2,4 @@
 
 1. [第一部分练习](/doc/README1.md)
 2. [第二部分练习](/doc/README2.md)
+3. [第三部分练习](/doc/README3.md)
