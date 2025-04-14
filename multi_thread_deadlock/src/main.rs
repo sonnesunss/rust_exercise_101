@@ -26,14 +26,14 @@ fn main() {
     });
 
     let t2 = thread::spawn(move || {
-        println!("t2线程开始执行并尝试获取lock_b互斥锁");
-        let _a = cloned_lock_b2.lock().unwrap();
-        println!("t2线程获得lock_b互斥锁进入临界区执行");
+        println!("t2线程开始执行并尝试获取lock_a互斥锁");
+        let _a = cloned_lock_a2.lock().unwrap();
+        println!("t2线程获得lock_a互斥锁进入临界区执行");
         thread::sleep(Duration::from_secs(1));
 
-        println!("t2线程尝试获取lock_a互斥锁");
-        let _b = cloned_lock_a2.lock().unwrap();
-        println!("t2线程获取lock_a互斥锁并进入临界区执行");
+        println!("t2线程尝试获取lock_b互斥锁");
+        let _b = cloned_lock_b2.lock().unwrap();
+        println!("t2线程获取lock_b互斥锁并进入临界区执行");
         thread::sleep(Duration::from_secs(1));
     });
 
