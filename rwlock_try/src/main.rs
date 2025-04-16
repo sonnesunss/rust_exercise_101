@@ -1,6 +1,5 @@
 use std::sync::{Arc, RwLock};
 use std::thread;
-use std::thread::JoinHandle;
 use std::time::Duration;
 
 fn main() {
@@ -18,6 +17,17 @@ fn main() {
                 Ok(r) => println!("thread-{} read -> {:?}", x, r),
                 Err(e) => eprintln!("thread-{} error -> {}", x, e),
             }
+
+            thread::sleep(Duration::from_secs(1));
+
+            println!("thread-{} try write", x);
+            let result = shared_clone.try_write();
+            match result {
+                Ok(mut r) => r.push(x),
+                Err(e) => eprintln!("thread-{} try write error {}", x, e),
+            }
+
+            println!("thread-{} finished", x);
         });
 
         handles.push(t_handle);
@@ -27,5 +37,6 @@ fn main() {
         handle.join().unwrap();
     });
 
+    println!("{:?}", shared.read().unwrap());
     println!("main thread finished!");
 }
