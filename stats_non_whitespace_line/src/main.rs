@@ -23,7 +23,24 @@ fn main() -> Result<()> {
         }
     }
 
-    println!("lines count -> {}", lines_count);
+    println!("\nlines count -> {}\n", lines_count);
+
+    // 更函数式的方式
+    let file = File::open("nobody.txt")?;
+    let lines_count = BufReader::new(file)
+        .lines()
+        .inspect(|line| println!("{:?}", line))
+        .filter_map(|line| match line {
+            Ok(text) if !text.trim().is_empty() => Some(text),
+            Ok(_) => None,
+            Err(e) => {
+                eprintln!("{}", e);
+                None
+            }
+        })
+        .count();
+
+    println!("\nlines count => {}\n", lines_count);
 
     Ok(())
 }
