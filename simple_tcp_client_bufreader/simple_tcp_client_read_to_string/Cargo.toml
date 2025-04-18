@@ -1,0 +1,6 @@
+[package]
+name = "simple_tcp_client_read_to_string"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
