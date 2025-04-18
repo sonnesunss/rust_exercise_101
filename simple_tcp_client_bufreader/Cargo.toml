@@ -1,0 +1,6 @@
+[package]
+name = "simple_tcp_client_bufreader"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
