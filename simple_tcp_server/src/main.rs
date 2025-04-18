@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::net::TcpListener;
 
 fn main() {
@@ -5,14 +6,18 @@ fn main() {
     let mut count = 0;
 
     println!("Server started");
-    for x in server.incoming() {
+    for stream in server.incoming() {
         count += 1;
         if count == 3 {
             break;
         }
 
-        match x {
-            Ok(c) => println!("Incoming client -> {:?} ", c.peer_addr()),
+        match stream {
+            Ok(mut c) => {
+                println!("Incoming client -> {:?} ", c.peer_addr());
+                let r = c.write(b"Hello my friend, thank you for your trust my services");
+                println!("{:?}", r);
+            }
             Err(e) => eprintln!("error {}", e),
         }
     }
