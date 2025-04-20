@@ -5,9 +5,9 @@ use std::thread;
 
 // 能够处理多个tcp客户端连接的能力，并给每个tcp连接写入消息
 fn main() -> Result<()> {
-    println!("TCP server listening on 127.0.0.1:9090");
+    println!("TCP server listening on 127.0.0.1:8080");
     let server =
-        TcpListener::bind("127.0.0.1:9090").expect("Could't binding this addr pls restart");
+        TcpListener::bind("127.0.0.1:8080").expect("Could't binding this addr pls restart");
 
     server.incoming().for_each(|es| {
         match es {
