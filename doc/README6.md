@@ -68,7 +68,7 @@
 发送消息并接收响应。
 提示: 使用TcpStream::connect_timeout设置超时。
 
-9. JSON解析HTTP响应
+9. JSON解析HTTP响应 -- todo
 描述: 编写一个Rust程序，发送HTTP请求并解析JSON响应。
 要求:
 使用reqwest向https://httpbin.org/json发送GET请求。
@@ -76,7 +76,7 @@
 解析响应为JSON，提取某个字段（如slideshow.title）并打印。
 提示: 使用serde和serde_json解析JSON，定义对应的Rust结构体。
 
-10. 简单的WebSocket客户端
+10. 简单的WebSocket客户端 --todo
 描述: 编写一个Rust程序，连接到WebSocket服务器并发送消息。
 要求:
 使用tungstenite库，连接到ws://echo.websocket.org。
