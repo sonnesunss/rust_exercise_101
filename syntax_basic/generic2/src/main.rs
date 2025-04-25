@@ -12,6 +12,21 @@ fn main() {
     let _rs1 = max_value2(&s1, &s2);
 
     println!("{}", _rs1);
+
+    let _p1 = Person {
+        name: "sunsssss",
+        age: 123,
+    };
+
+    let _p2 = Person {
+        name: "ggg",
+        age: 1.23,
+    };
+
+    let _p3 = Person {
+        name: "zzz",
+        age: 'a',
+    };
 }
 
 // 泛型函数
@@ -36,4 +51,11 @@ fn max_value2<'a, T: Ord>(one: &'a T, two: &'a T) -> &'a T {
     }
 
     two
+}
+
+// 泛型结构体
+#[allow(dead_code)]
+struct Person<T: PartialEq> {
+    name: &'static str,
+    age: T,
 }
