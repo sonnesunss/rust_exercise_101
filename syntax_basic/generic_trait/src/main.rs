@@ -58,6 +58,47 @@ impl FromU8 for MyType1 {
     }
 }
 
+impl FromI64 for MyType1 {
+    fn from1(val: i64) -> Self {
+        MyType1 {
+            n1: "GaGa",
+            a1: val as i32,
+        }
+    }
+}
+
+impl FromU64 for MyType1 {
+    fn from1(val: u64) -> Self {
+        MyType1 {
+            n1: "GaGa",
+            a1: val as i32,
+        }
+    }
+}
+
+impl FromU32 for MyType1 {
+    fn from1(val: u32) -> Self {
+        MyType1 {
+            n1: "GaGa",
+            a1: val as i32,
+        }
+    }
+}
+
+/* 有generic trait的时候，完全可以这么做 */
+pub trait FromX<T> {
+    fn from1(val: T) -> Self;
+}
+
+impl FromX<i8> for MyType1 {
+    fn from1(val: i8) -> Self {
+        MyType1 {
+            n1: "GaGa",
+            a1: val as i32,
+        }
+    }
+}
+
 fn main() {
     // TODO
     let i1: i32 = 123;
@@ -66,6 +107,10 @@ fn main() {
     let u1: u8 = 255;
     let mt2 = <MyType1 as FromU8>::from1(u1);
 
+    let i3: i8 = 10;
+    let mt3 = <MyType1 as FromX<i8>>::from1(i3);
+
     println!("{:?}", mt1);
     println!("{:?}", mt2);
+    println!("{:?}", mt3);
 }
