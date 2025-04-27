@@ -1,6 +1,9 @@
 use bytes::{BufMut, BytesMut};
+use std::boxed;
 use std::fs::File;
 use std::io::Read;
+use std::io::Write;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpListener};
 use std::path::Path;
 
 #[allow(dead_code)]
@@ -36,13 +39,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut file_descriptor = File::open(Path::new(file1))?;
 
     let ur = file_descriptor.read(&mut buf);
+    let mut r: BytesMut;
+
     match ur {
-        Ok(_) => {
-            let r = encode_fime_msg(file1, &buf);
+        Ok(n) => {
+            r = encode_fime_msg(file1, &buf[..n]);
             println!("{:?}", r);
         }
-        Err(e) => eprint!("{}", e),
+        Err(e) => {
+            eprint!("{}", e);
+            return Err(Box::new(e));
+        }
     }
 
-    Ok(())
+    // tcp listener
+    let socket_addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 9000);
+    let listener = TcpListener::bind(socket_addr)?;
+    //  accept loop
+    loop {
+        match listener.accept() {
+            Ok((mut tcp_stream, addr)) => {
+                tcp_stream.write(&r);
+            }
+            Err(e) => {
+                eprintln!("{}", e);
+            }
+        }
+    }
 }
