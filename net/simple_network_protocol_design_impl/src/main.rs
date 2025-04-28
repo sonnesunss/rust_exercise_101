@@ -1,9 +1,15 @@
 use bytes::{BufMut, BytesMut};
+use ctrlc;
 use std::fs::File;
+use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpListener};
 use std::path::Path;
+use std::sync::mpsc::TryRecvError;
+use std::sync::mpsc::channel;
+use std::thread;
+use std::time::Duration;
 
 // 准备并编码协议需要的内容
 #[allow(dead_code)]
@@ -33,7 +39,7 @@ fn encode_fime_msg(file_name: &str, file_content: &[u8]) -> BytesMut {
     buf
 }
 
-// 读取整个文件到一个恰好的vec结构内，避免过度或者不够的内存分配
+// 读取整个文件到一个恰好的vec结构内, 避免过度或者不够的内存分配
 #[allow(dead_code)]
 fn read_whole_file(file_name: &str) -> std::io::Result<Vec<u8>> {
     let mut fd = File::open(Path::new(file_name))?;
@@ -46,7 +52,25 @@ fn read_whole_file(file_name: &str) -> std::io::Result<Vec<u8>> {
     Ok(buf)
 }
 
+/*
+第二版实现流式传输:
+
+将传输过程分成两部分
+
+1. 先编码传输一个header
+2. 在传输文件主体内容
+*/
+// fn encoding_msg_header(file_name: &str, file_size: usize) -> BytesMut {}
+
+/*
+*/
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let (tx, rx) = channel();
+    ctrlc::set_handler(move || tx.send(()).expect("Could't send signal"))
+        .expect("Could't setting ctrl-c handler");
+    println!("Press Ctrl-C to quit app");
+
     let file1 = "README.md";
     let buf = read_whole_file(file1)?;
 
@@ -56,16 +80,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // tcp listener
     let socket_addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 9000);
     let listener = TcpListener::bind(socket_addr)?;
+    listener.set_nonblocking(true)?;
     //  accept loop
     loop {
+        match rx.try_recv() {
+            Ok(_) | Err(TryRecvError::Disconnected) => {
+                println!("Received Ctrl-C, shutting down...");
+                break;
+            }
+            Err(TryRecvError::Empty) => {} // 通道为空，继续处理
+        }
+
         match listener.accept() {
             Ok((mut tcp_stream, _addr)) => {
                 // 暂时忽略掉返回的写入成功的字节数目
                 let _ = tcp_stream.write(&r);
             }
+            Err(ref e)
+                if e.kind() == io::ErrorKind::WouldBlock
+                    || e.kind() == io::ErrorKind::ResourceBusy => {}
             Err(e) => {
                 eprintln!("{}", e);
             }
         }
     }
+
+    Ok(())
 }
