@@ -1,0 +1,8 @@
+[package]
+name = "daytime_server"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ctrlc = "3.4.6"
+chrono = "0.4.40"
