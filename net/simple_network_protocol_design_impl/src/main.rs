@@ -1,11 +1,11 @@
 use bytes::{BufMut, BytesMut};
-use std::boxed;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpListener};
 use std::path::Path;
 
+// 准备并编码协议需要的内容
 #[allow(dead_code)]
 fn encode_fime_msg(file_name: &str, file_content: &[u8]) -> BytesMut {
     // 准备协议需要的内容
@@ -33,24 +33,25 @@ fn encode_fime_msg(file_name: &str, file_content: &[u8]) -> BytesMut {
     buf
 }
 
+// 读取整个文件到一个恰好的vec结构内，避免过度或者不够的内存分配
+#[allow(dead_code)]
+fn read_whole_file(file_name: &str) -> std::io::Result<Vec<u8>> {
+    let mut fd = File::open(Path::new(file_name))?;
+    let file_meta = fd.metadata()?;
+    let file_size = file_meta.len() as usize;
+    let mut buf = Vec::with_capacity(file_size);
+
+    let _ru = fd.read_to_end(&mut buf)?;
+
+    Ok(buf)
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file1 = "README.md";
-    let mut buf: [u8; 1024] = [0; 1024];
-    let mut file_descriptor = File::open(Path::new(file1))?;
+    let buf = read_whole_file(file1)?;
 
-    let ur = file_descriptor.read(&mut buf);
-    let mut r: BytesMut;
-
-    match ur {
-        Ok(n) => {
-            r = encode_fime_msg(file1, &buf[..n]);
-            println!("{:?}", r);
-        }
-        Err(e) => {
-            eprint!("{}", e);
-            return Err(Box::new(e));
-        }
-    }
+    let r: BytesMut = encode_fime_msg(file1, &buf);
+    println!("{:?}", r);
 
     // tcp listener
     let socket_addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 9000);
@@ -58,8 +59,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //  accept loop
     loop {
         match listener.accept() {
-            Ok((mut tcp_stream, addr)) => {
-                tcp_stream.write(&r);
+            Ok((mut tcp_stream, _addr)) => {
+                // 暂时忽略掉返回的写入成功的字节数目
+                let _ = tcp_stream.write(&r);
             }
             Err(e) => {
                 eprintln!("{}", e);
