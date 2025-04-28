@@ -39,6 +39,25 @@ fn encode_fime_msg(file_name: &str, file_content: &[u8]) -> BytesMut {
     buf
 }
 
+#[allow(dead_code)]
+fn encode_file_meta_header(file_name: &str, file_size: usize) -> BytesMut {
+    let magic_num: u32 = 0x930909;
+    let ver_num: u16 = 1;
+    let filename_bytes = file_name.as_bytes();
+    let filename_len = filename_bytes.len() as u16;
+    let file_content_size = file_size as u32;
+
+    let mut buf = BytesMut::with_capacity(4 + 2 + 2 + filename_len as usize + 4);
+
+    buf.put_u32(magic_num.to_be());
+    buf.put_u16(ver_num.to_be());
+    buf.put_u16(filename_len.to_be());
+    buf.extend_from_slice(filename_bytes);
+    buf.put_u32(file_content_size.to_be());
+
+    buf
+}
+
 // 读取整个文件到一个恰好的vec结构内, 避免过度或者不够的内存分配
 #[allow(dead_code)]
 fn read_whole_file(file_name: &str) -> std::io::Result<Vec<u8>> {
@@ -51,16 +70,6 @@ fn read_whole_file(file_name: &str) -> std::io::Result<Vec<u8>> {
 
     Ok(buf)
 }
-
-/*
-第二版实现流式传输:
-
-将传输过程分成两部分
-
-1. 先编码传输一个header
-2. 在传输文件主体内容
-*/
-// fn encoding_msg_header(file_name: &str, file_size: usize) -> BytesMut {}
 
 /*
 */
