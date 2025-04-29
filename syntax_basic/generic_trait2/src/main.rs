@@ -44,9 +44,9 @@ fn main() {
     let i1: u64 = 1232;
     let i2: u64 = 2313;
 
-    // 会出现错误， u64并没有实现CustomAddTrait
-    let r1 = my_add2(i1, i2);
-    let r3 = my_add3(i1, i2);
+    // 下面注释的行会出现错误， u64并没有实现CustomAddTrait
+    // let r1 = my_add2(i1, i2);
+    let _r3 = my_add3(i1, i2);
 
     println!("{}", my_add(a, b));
 }
