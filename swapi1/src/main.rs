@@ -1,20 +1,14 @@
-use crate::films::Films;
-use crate::people::People;
-use crate::planets::Planets;
-use crate::species::Species;
-use crate::starships::Starships;
-use crate::vehicles::Vehicles;
+use crate::models::films::Films;
+use crate::models::people::People;
+use crate::models::planets::Planets;
+use crate::models::species::Species;
+use crate::models::starships::Starships;
+use crate::models::vehicles::Vehicles;
 use pretty_printer::pretty_print;
 use reqwest;
 use tokio;
 
-mod films;
-mod people;
-mod planets;
-mod species;
-mod starships;
-mod vehicles;
-
+mod models;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // https://swapi.info/api/people/x, x 属于数字N
