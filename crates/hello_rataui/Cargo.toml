@@ -1,0 +1,12 @@
+[package]
+name = "hello_rataui"
+version = "0.1.0"
+description = "rataui study1"
+authors = ["sun <145575806+sonnesunss@users.noreply.github.com>"]
+license = "MIT"
+edition = "2024"
+
+[dependencies]
+crossterm = "0.28.1"
+ratatui = "0.29.0"
+color-eyre = "0.6.3"
