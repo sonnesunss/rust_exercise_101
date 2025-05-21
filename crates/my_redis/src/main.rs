@@ -9,7 +9,11 @@ async fn main() {
     loop {
         // The second item contains the IP and port of the new connection.
         let (socket, _) = listener.accept().await.unwrap();
-        process(socket).await;
+        //  每进来一个请求，会await在这里停留等待process函数的执行结束
+        //  创建一个task任务，使得可以异步处理这个任务
+        tokio::spawn(async move {
+            process(socket).await;
+        });
     }
 }
 
