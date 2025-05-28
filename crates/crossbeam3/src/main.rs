@@ -1,4 +1,20 @@
-// crossbeam 通道 -- mpmc
+/*
+    # crossbeam_channel -- mpmc channel
+
+    图示:
+
+   +----------+  tx.send                                              rx.recv    +------------+
+   |Producer A| -->--+                                              +--------->  | Consumer X |
+   +----------+      |                                              |            +------------+
+                     V            +-------------------+             ^
+                     +-->--->---> | crossbeam channel | --->---->-->+
+                     ^            +-------------------+             v
+   +----------+      |                                              |           +------------+
+   |Producer B| -->--+                                              +-------->  | Consumer Y |
+   +----------+  tx.send                                             rx.recv    +------------+
+
+*/
+
 use crossbeam::channel::{bounded, select};
 use std::thread;
 use std::time::Duration;
