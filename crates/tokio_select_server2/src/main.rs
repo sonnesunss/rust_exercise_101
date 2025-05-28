@@ -64,6 +64,8 @@ async fn handle_client(socket: TcpStream, addr: String) {
                 println!("[{:?}] Write error: {:?}", addr.lock().await, e);
                 break;
             }
+
+            let _ = tx.send(());
         }
     }
 
